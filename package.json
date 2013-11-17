@@ -1,0 +1,59 @@
+{
+  "name": "grunt-remfallback",
+  "description": "Finds rem values in CSS and creates fallbacks with px values.",
+  "version": "0.0.1",
+  "homepage": "https://github.com/thomasdobber/grunt-remfallback",
+  "author": "Thomas Dobber <thomasdobber@gmail.com>",
+  "maintainers": [
+    {
+      "name": "Thomas Dobber",
+      "email": "thomasdobber@gmail.com",
+      "twitter": "@thomasdobber"
+    }
+  ],
+  "contributors": [
+    {
+      "name": "Thomas Dobber",
+      "email": "thomasdobber@gmail.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/buildingblocks/grunt-remfallback.git"
+  },
+  "bugs": {
+    "url": "https://github.com/buildingblocks/grunt-remfallback/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/buildingblocks/grunt-remfallback/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "Gruntfile.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "dependencies": {
+    "grunt": "~0.4.1",
+    "css-parse": "~1.6.0",
+    "css-stringify": "~1.3.2"
+  },
+  "devDependencies": {
+    "grunt-contrib-jshint": "~0.1.1",
+    "grunt-contrib-clean": "~0.4.0",
+    "grunt-contrib-watch": "~0.5.3"
+  },
+  "peerDependencies": {
+    "grunt": "~0.4.1",
+    "css-parse": "~1.6.0",
+    "css-stringify": "~1.3.2"
+  },
+  "keywords": [
+    "grunt",
+    "gruntplugin",
+    "css",
+    "rem",
+    "fallback"
+  ]
+}
