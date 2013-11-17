@@ -1,7 +1,7 @@
 {
   "name": "grunt-remfallback",
   "description": "Finds rem values in CSS and creates fallbacks with px values.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "homepage": "https://github.com/thomasdobber/grunt-remfallback",
   "author": "Thomas Dobber <thomasdobber@gmail.com>",
   "maintainers": [

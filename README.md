@@ -1,4 +1,4 @@
-# grunt-remfallback v0.0.3
+# grunt-remfallback v0.0.4
 
 > Generate px valued fallbacks for CSS properties with rem values.
 
@@ -41,13 +41,21 @@ Default: `false`
 
 Log some information about the processed found root font-size and the amount of rem values.
 
+#### replace
+
+Type: `boolean`
+Default: `false`
+
+Replace rem values by the px values, handy for generating seperate stylesheets.
+
 ### Usage Examples
 
 ```js
 grunt.initConfig({
   remfallback: {
     options: {
-      log: false
+      log: false,
+      replace: false
     },
     your_target: {
       files: {
@@ -62,6 +70,7 @@ grunt.initConfig({
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
+* 17-11-13 - v0.0.4 - Added replace option.
 * 17-11-13 - v0.0.3 - Corrected dependencies.
 * 17-11-13 - v0.0.2 - Corrected version number.
 * 17-11-13 - v0.0.1 - Initial release.

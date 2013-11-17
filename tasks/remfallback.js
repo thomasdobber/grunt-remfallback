@@ -18,7 +18,8 @@ module.exports = function(grunt){
 
     // options
     var options = this.options({
-      log: false
+      log: false,
+      replace: false
     });
 
     this.files.forEach(function(f){
@@ -136,13 +137,14 @@ module.exports = function(grunt){
           if(declaration.type === 'declaration' && declaration.value.match(regexRem)) {
             var remValueList = declaration.value.split(/\s/);
             var pxValues = remToPx(remValueList);
-
-            // create the fallback
-            var fallback = clone(declaration);
-            fallback.value = pxValues;
-
-            // insert fallback before original
-            rule.declarations.splice(i, 0, fallback);
+            
+            if(options.replace){
+              declaration.value = pxValues;
+            } else {
+              var fallback = clone(declaration);
+              fallback.value = pxValues;
+              rule.declarations.splice(i, 0, fallback);
+            }
 
             i++;
           }

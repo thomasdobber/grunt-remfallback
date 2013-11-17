@@ -24,6 +24,10 @@ module.exports = function(grunt) {
       },
     },
     remfallback: {
+      options: {
+        log: true,
+        replace: false
+      },
       dist: {
         files: {
           'result/example.css': ['test/*.css']
