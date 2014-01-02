@@ -46,7 +46,7 @@ module.exports = function(grunt){
       
       // round floating numbers
       function preciseRound(num,decimals){
-        return Math.round(num*Math.pow(10,decimals))/Math.pow(10,decimals);
+        return Math.round(Math.round(num*Math.pow(10,decimals))/Math.pow(10,decimals), 1);
       }
 
       // convert rem to px
