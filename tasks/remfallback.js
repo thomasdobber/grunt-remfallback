@@ -46,7 +46,7 @@ module.exports = function(grunt){
       
       // round floating numbers
       function preciseRound(num,decimals){
-        return Math.round(num*Math.pow(10,decimals))/Math.pow(10,decimals);
+        return Math.round(Math.round(num*Math.pow(10,decimals))/Math.pow(10,decimals), 1);
       }
 
       // convert rem to px
@@ -63,7 +63,7 @@ module.exports = function(grunt){
 
             // replace 'rem' and anything that comes after it, we'll repair this later
             var unitlessValue = v.replace(/rem.*/, '');
-            var pxValue = preciseRound(unitlessValue * rootSize, 1) + 'px';
+            var pxValue = preciseRound(unitlessValue * rootSize, 0) + 'px';
             var newValue = restValue ? pxValue + restValue : pxValue;
 
             remFound++;
