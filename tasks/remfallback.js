@@ -21,7 +21,8 @@ module.exports = function(grunt) {
       log: false,
       replace: false,
       ignoreUnsupported: true,
-      mediaQuery: false
+      mediaQuery: false,
+      round: false
     });
 
     this.files.forEach(function(f) {
@@ -49,7 +50,8 @@ module.exports = function(grunt) {
           unsupportedProperties = ['transform', 'perspective', 'background-size'];
 
       // round floating numbers
-      function preciseRound(num, decimals) {
+      function preciseRound(num) {
+        var decimals = options.round ? 0 : 1;
         return Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals);
       }
 
@@ -82,7 +84,7 @@ module.exports = function(grunt) {
 
             // replace 'rem' and anything that comes after it, we'll repair this later
             var unitlessValue = v.replace(/rem.*/, '');
-            var pxValue = preciseRound(unitlessValue * rootSize, 0) + 'px';
+            var pxValue = preciseRound(unitlessValue * rootSize) + 'px';
             var newValue = restValue ? pxValue + restValue : pxValue;
 
             remFound++;
