@@ -8,10 +8,10 @@
 
 'use strict';
 
-module.exports = function(grunt){
+module.exports = function(grunt) {
 
-  grunt.registerMultiTask('remfallback', 'Finds rem values in CSS and creates fallbacks with px values.', function(){
-    
+  grunt.registerMultiTask('remfallback', 'Finds rem values in CSS and creates fallbacks with px values.', function() {
+
     // requirements
     var parse = require('css-parse'),
         stringify = require('css-stringify');
@@ -19,11 +19,13 @@ module.exports = function(grunt){
     // options
     var options = this.options({
       log: false,
-      replace: false
+      replace: false,
+      ignoreUnsupported: true,
+      mediaQuery: false
     });
 
-    this.files.forEach(function(f){
-    
+    this.files.forEach(function(f) {
+
       // get file contents
       var contents = f.src.filter(function(filepath) {
         if (!grunt.file.exists(filepath)) {
@@ -40,30 +42,47 @@ module.exports = function(grunt){
       var json = parse(contents),
           rootSize = 16,
           regexHtml = /^html$|\w*\s+html$/,
-          regexRem = /[0-9]+rem/,
+          regexRem = /[0-9]+rem(?![^\(\)]*\))/,
+          regexCalc = /calc(.+)/,
           regexFont = /\s*(.*)\//,
-          remFound = 0;
-      
+          remFound = 0,
+          unsupportedProperties = ['transform', 'perspective', 'background-size'];
+
       // round floating numbers
-      function preciseRound(num,decimals){
-        return Math.round(num*Math.pow(10,decimals))/Math.pow(10,decimals);
+      function preciseRound(num, decimals) {
+        return Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals);
+      }
+
+      function isSupported(declaration) {
+         if (unsupportedProperties.indexOf(declaration.property) != -1) {
+            return false;
+         }
+
+         // uses multiple backgrounds
+         if (/^background/.test(declaration.property) && /[,](?![^\(\)]*\))/.test(declaration.value)) {
+            return false;
+         }
+
+         return true;
       }
 
       // convert rem to px
-      function remToPx(remArray){
+      function remToPx(remArray) {
 
-        var pxArray = remArray.map(function(v){
-          if( v.match(regexRem) ){
+        var pxArray = remArray.map(function(v) {
+          if (regexCalc.test(v)) {
+            return v;
+          } else if (regexRem.test(v)) {
 
             // this one is needed to split properties like '2rem/1.5'
             var restValue = '';
-            if( v.match(/\//) ){
+            if (/\//.test(v)) {
               restValue = v.match(/\/.*/);
             }
 
             // replace 'rem' and anything that comes after it, we'll repair this later
             var unitlessValue = v.replace(/rem.*/, '');
-            var pxValue = preciseRound(unitlessValue * rootSize, 1) + 'px';
+            var pxValue = preciseRound(unitlessValue * rootSize, 0) + 'px';
             var newValue = restValue ? pxValue + restValue : pxValue;
 
             remFound++;
@@ -76,10 +95,10 @@ module.exports = function(grunt){
       }
 
       // function to clone object
-      function clone(obj){
+      function clone(obj) {
         var copy = {};
         for (var attr in obj) {
-          if (obj.hasOwnProperty(attr)){
+          if (obj.hasOwnProperty(attr)) {
             copy[attr] = obj[attr];
           }
         }
@@ -87,58 +106,61 @@ module.exports = function(grunt){
       }
 
       // create a base value from px,em,rem or percentage
-      function createBaseSize(value){
-        if(value.match(/px/)){
-          return value.replace(/px/, ''); }
+      function createBaseSize(value) {
+        if (/px/.test(value)) {
+          return value.replace(/px/, '');
+        }
 
-        if(value.match(/em|rem/)){
-          return value.replace(/em|rem/, '') * 16; }
+        if (/em|rem/.test(value)) {
+          return value.replace(/em|rem/, '') * 16;
+        }
 
-        if(value.match(/%/)){
-          return value.replace(/%/, '')/100 * 16; }
+        if (/%/.test(value)) {
+          return value.replace(/%/, '')/100 * 16;
+        }
       }
 
       // find root font-size declarations
-      function findRoot(r){
-        r.selectors.forEach(function(s){
+      function findRoot(r) {
+        r.selectors.forEach(function(s) {
 
           // look for 'html' selectors
-          if(s.match(regexHtml)){
+          if (regexHtml.test(s)) {
 
-            r.declarations.forEach(function(d){
+            r.declarations.forEach(function(d) {
               var foundSize = false;
 
               // look for the 'font' property
-              if (d.property === 'font' && d.value.match(regexFont)){
+              if (d.property === 'font' && regexFont.test(d.value)) {
                 foundSize = d.value.match(regexFont)[1];
               }
 
               // look for the 'font-size' property
-              else if (d.property === 'font-size'){
+              else if (d.property === 'font-size') {
                 foundSize = d.value;
               }
 
               // update root size if new one is found
-              if(foundSize){
+              if (foundSize) {
                 rootSize = createBaseSize(foundSize);
-              }   
+              }
             });
           }
         });
       }
 
       // look for rem values
-      function findRems(rule){
-        
-        for (var i = 0; i < rule.declarations.length; i++){
+      function findRems(rule) {
+
+        for (var i = 0; i < rule.declarations.length; i++) {
           var declaration = rule.declarations[i];
 
           // grab values that contain 'rem'
-          if(declaration.type === 'declaration' && declaration.value.match(regexRem)) {
-            var remValueList = declaration.value.split(/\s/);
-            var pxValues = remToPx(remValueList);
-            
-            if(options.replace){
+          if (declaration.type === 'declaration' && isSupported(declaration) && regexRem.test(declaration.value)) {
+
+            var pxValues = remToPx(declaration.value.split(/\s(?![^\(\)]*\))/));
+
+            if (options.replace) {
               declaration.value = pxValues;
             } else {
               var fallback = clone(declaration);
@@ -152,36 +174,34 @@ module.exports = function(grunt){
       }
 
       // go through all the rules
-      json.stylesheet.rules.forEach(function(rule){
+      json.stylesheet.rules.forEach(function(rule) {
 
-        // normal rules
-        if(rule.type === 'rule'){
+        if (rule.type === 'rule') {
           findRoot(rule);
           findRems(rule);
-        } 
+        }
 
-        // media queries
-        if(rule.type === 'media'){
-          rule.rules.forEach(function(mediaRule){
-            if(mediaRule.type === 'rule'){
+        if (options.mediaQuery && rule.type === 'media') {
+          rule.rules.forEach(function(mediaRule) {
+            if (mediaRule.type === 'rule') {
               findRoot(mediaRule);
               findRems(mediaRule);
             }
           });
         }
+
       });
 
       // log stuff
-      if(options.log){
-        grunt.log.writeln('------------------------------------');
+      if(options.log) {
         grunt.log.writeln('Root size found: ' + rootSize + 'px');
         grunt.log.writeln('Rem units found: '+ remFound);
-        grunt.log.writeln('------------------------------------');
       }
 
       // write the new file
-      grunt.file.write(f.dest, stringify(json) );
+      grunt.file.write(f.dest, stringify(json));
       grunt.log.ok('File "' + f.dest + '" created.');
+
     });
   });
 };
