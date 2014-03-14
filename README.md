@@ -1,4 +1,4 @@
-# grunt-remfallback v0.0.4
+# grunt-remfallback v0.0.5
 
 > Generate px valued fallbacks for CSS properties with rem values.
 
@@ -48,6 +48,27 @@ Default: `false`
 
 Replace rem values by the px values, handy for generating seperate stylesheets.
 
+#### ignoreUnsupported
+
+Type: `boolean`
+Default: `true`
+
+Ignore rem values that are for properties that are unsupported by ltIE9.
+
+##### mediaQuery
+
+Type: `boolean`
+Default: `false`
+
+Ignore rem values within media queries.
+
+#### round
+
+Type: `boolean`
+Default: `false`
+
+Round fallback values.
+
 ### Usage Examples
 
 ```js
@@ -70,6 +91,7 @@ grunt.initConfig({
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
+* 14-03-14 - v0.0.5 - Improved task and added options.
 * 17-11-13 - v0.0.4 - Added replace option.
 * 17-11-13 - v0.0.3 - Corrected dependencies.
 * 17-11-13 - v0.0.2 - Corrected version number.
