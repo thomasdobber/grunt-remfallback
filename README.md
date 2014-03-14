@@ -55,7 +55,7 @@ Default: `true`
 
 Ignore rem values that are for properties that are unsupported by ltIE9.
 
-##### mediaQuery
+#### mediaQuery
 
 Type: `boolean`
 Default: `false`
