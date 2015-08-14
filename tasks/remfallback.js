@@ -170,7 +170,6 @@ module.exports = function(grunt) {
               rule.declarations.splice(i, 0, fallback);
             }
 
-            i++;
           }
         }
       }
